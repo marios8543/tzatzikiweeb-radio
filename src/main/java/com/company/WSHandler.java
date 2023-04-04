@@ -50,6 +50,8 @@ public class WSHandler {
 
     @OnWebSocketClose
     public void closed(Session session, int status, String reason) {
+        System.out.println(reason);
+        System.out.println(status);
         String username = users.get(session);
         users.remove(session);
         broadcast("",username+" has left the chat!");

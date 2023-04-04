@@ -45,10 +45,13 @@ class RadioApi {
         });
 
         server.before("/api/radio/request",(request, response) -> {
-            if (requestLimits.containsKey(request.ip())) {
-                long currentTime = Instant.now().getEpochSecond();
-                if ((currentTime-requestLimits.get(request.ip())) < requestLimit) {
-                    halt(403,"You can only make a song request every "+requestLimit+" seconds");
+            if (!(request.cookies().containsKey("admin_key") &&
+                    request.cookies().get("admin_key").equals(System.getenv("ADMIN_KEY")))) {
+                if (requestLimits.containsKey(request.ip())) {
+                    long currentTime = Instant.now().getEpochSecond();
+                    if ((currentTime-requestLimits.get(request.ip())) < requestLimit) {
+                        halt(403,"You can only make a song request every "+requestLimit+" seconds");
+                    }
                 }
             }
         });
@@ -72,7 +75,6 @@ class RadioApi {
             if (request.cookies().containsKey("admin_key") &&
                     request.cookies().get("admin_key").equals(System.getenv("ADMIN_KEY"))) {
                 skip = true;
-                wsHandler.broadcast("force_reload","");
                 halt();
             }
         });
@@ -86,7 +88,6 @@ class RadioApi {
             };
             if (skipVotes.size()>=votesToSkip) {
                 skip = true;
-                wsHandler.broadcast("force_reload","");
                 return "Skipping";
             }
             else {
@@ -101,34 +102,54 @@ class RadioApi {
 
         new Thread(() -> {
             while (true) {
-                while (playlist.size() < 5) {
-                    try {
-                        playlist.add(JellyfinClient.getRandomSong());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
                 currentTime = 0;
                 skipVotes = new ArrayList<>();
                 if (requests.size()>0) {
                     nowPlaying = requests.get(0);
                     requests.remove(0);
                 }
-                else {
+                else if (playlist.size() > 0){
                     nowPlaying = playlist.get(0);
                     playlist.remove(0);
                 }
-                for(int i=0;i<nowPlaying.length;i++) {
-                    currentTime++;
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                if (skip) {
+                    skip = false;
+                    wsHandler.broadcast("force_reload","");
+                }
+                if (this.nowPlaying != null) {
+                    for(int i=0;i<nowPlaying.length;i++) {
+                        currentTime++;
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        if (skip) break;
                     }
-                    if (skip) {
-                        skip = false;
-                        break;
+                }
+            }
+        }).start();
+
+        new Thread(() -> {
+            while (true) {
+                while (playlist.size() < 5) {
+                    while (true) {
+                        try {
+                            Song song = JellyfinClient.getRandomSong();
+                            if (!song.title.toLowerCase().contains("inst") && !song.title.toLowerCase().contains("off vocal")) {
+                                playlist.add(song);
+                                break;
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            System.out.println("Retrying...");
+                        }
                     }
+                }
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
         }).start();

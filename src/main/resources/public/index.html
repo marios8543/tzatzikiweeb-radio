@@ -103,7 +103,7 @@
       <div class="col-sm">
         <div class="nes-container is-dark with-title" style="width:100%; height:100%;">
           <p class="title">Now playing</p>
-          <img v-bind:src="'https://jellyfin.tzatzikiweeb.moe/Items/'+nowPlaying.id+'/Images/Primary?maxHeight=300&quality=20'" width="240" height="240" v-on:error="onImgError"><br><br>
+          <img v-bind:src="'https://jellyfin.tzatzikiweeb.moe/Items/'+nowPlaying.albumId+'/Images/Primary?maxHeight=300&quality=20'" width="240" height="240" v-on:error="onImgError"><br><br>
           <h5>
             {{ nowPlaying.artist }} - {{ nowPlaying.title }}<br>
             {{ nowPlaying.album }}
@@ -143,7 +143,7 @@
         <div class="row lists">
           <ul class="nes-list is-circle" style="width:100%;">
             <li v-for="song in upcoming">
-              <img v-bind:src="'https://jellyfin.tzatzikiweeb.moe/Items/'+song.id+'/Images/Primary?maxHeight=300&quality=20'" style="float: left; margin-right: 10px;" width="50"
+              <img v-bind:src="'https://jellyfin.tzatzikiweeb.moe/Items/'+song.albumId+'/Images/Primary?maxHeight=300&quality=20'" style="float: left; margin-right: 10px;" width="50"
                 height="50" v-on:error="onImgError">
               <div style="text-overflow: ellipsis;" v-bind:title="song.artist - song.title">
                 {{ song.artist }}<br>{{ song.title }}

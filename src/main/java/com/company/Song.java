@@ -11,7 +11,8 @@ class Song {
     final String title;
     final String artist;
     final String album;
-    final double length;
+    final int length;
+    final String albumId;
 
     public Song(JSONObject obj){
         //System.out.println(obj.toJSONString());
@@ -21,7 +22,8 @@ class Song {
         title = (String)obj.get("Name");
         artist = (String)obj.getOrDefault("AlbumArtist", "Unknown Artist");
         album = (String)obj.getOrDefault("Album", "Unknown Album");
-        length = ((long)obj.getOrDefault("RunTimeTicks", 1))*(1./10000000.);
+        length = (int) (((long)obj.getOrDefault("RunTimeTicks", 1))*(1./10000000.));
+        albumId = (String) obj.getOrDefault("AlbumId", "");
     }
 
     private static String sanitizePath(String s) {
@@ -39,6 +41,7 @@ class Song {
         ret.put("album",album);
         ret.put("length",length);
         ret.put("id",id);
+        ret.put("albumId", albumId);
         return ret;
     }
 
