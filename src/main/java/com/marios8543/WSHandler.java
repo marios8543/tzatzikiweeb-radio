@@ -1,5 +1,6 @@
-package com.company;
+package com.marios8543;
 
+import com.marios8543.discordbot.EventListener;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
@@ -13,12 +14,14 @@ import java.util.*;
 @WebSocket
 public class WSHandler {
     private final Map<Session,String> users = new HashMap<>();
+    public int nowListening = 0;
+    public MessageBroadcast broadcast;
 
     public void broadcast(String author, String content) {
         JSONObject object = new JSONObject();
         object.put("author",author);
         object.put("content",content);
-        object.put("nowListening",users.size());
+        object.put("nowListening", nowListening);
 
         users.keySet().forEach((session -> {
             try {
@@ -45,6 +48,7 @@ public class WSHandler {
     public void connected(Session session) {
         String username = (new Username(session)).username;
         users.put(session,username);
+        nowListening++;
         broadcast("",username+" has joined the chat!");
     }
 
@@ -54,11 +58,13 @@ public class WSHandler {
         System.out.println(status);
         String username = users.get(session);
         users.remove(session);
+        nowListening--;
         broadcast("",username+" has left the chat!");
     }
 
     @OnWebSocketMessage
     public void message(Session session, String message) {
         broadcast(users.get(session),message);
+        broadcast.onMessage(users.get(session),message);
     }
 }

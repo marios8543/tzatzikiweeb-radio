@@ -1,5 +1,6 @@
-package com.company;
+package com.marios8543;
 
+import com.marios8543.discordbot.SongChangeListener;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import spark.Service;
@@ -9,18 +10,20 @@ import java.util.*;
 
 import static spark.Spark.halt;
 
-class RadioApi {
+public class RadioApi {
     private Song nowPlaying = null;
     private final List<Song> playlist = new ArrayList<>();
     private final List<Song> requests = new ArrayList<>();
     private final Map<String,Long> requestLimits = new HashMap<>();
     private static int currentTime = 0;
-
     private List<String> skipVotes = new ArrayList<>();
     private final int requestLimit = Integer.parseInt(System.getenv("request_limit"));
     private boolean skip = false;
-
-    private final WSHandler wsHandler = new WSHandler();
+    public final WSHandler wsHandler = new WSHandler();
+    private List<SongChangeListener> songChangeListeners = new ArrayList<>();
+    public void addSongChangeListener(SongChangeListener listener) {
+        songChangeListeners.add(listener);
+    }
 
     RadioApi(Service server) {
         server.webSocket("/api/chat",wsHandler);
@@ -117,6 +120,7 @@ class RadioApi {
                     wsHandler.broadcast("force_reload","");
                 }
                 if (this.nowPlaying != null) {
+                    songChangeListeners.forEach((listener -> listener.songChanged(this.nowPlaying)));
                     for(int i=0;i<nowPlaying.length;i++) {
                         currentTime++;
                         try {
@@ -141,8 +145,7 @@ class RadioApi {
                                 break;
                             }
                         } catch (Exception e) {
-                            e.printStackTrace();
-                            System.out.println("Retrying...");
+                            System.out.println(e.getMessage() + "\nRetrying...");
                         }
                     }
                 }
@@ -154,4 +157,25 @@ class RadioApi {
             }
         }).start();
     }
+
+    public Song getNowPlaying() {
+        return nowPlaying;
+    }
+
+    public List<Song> getPlaylist() {
+        return playlist;
+    }
+
+    public List<Song> getRequests() {
+        return requests;
+    }
+
+    public int getCurrentTime() {
+        return currentTime;
+    }
+
+    public void addRequest(Song song) {
+        requests.add(song);
+    }
+
 }

@@ -1,11 +1,10 @@
-package com.company;
+package com.marios8543;
 
 import org.eclipse.jetty.websocket.api.Session;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpCookie;

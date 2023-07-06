@@ -1,10 +1,7 @@
-package com.company;
+package com.marios8543;
 
-import org.json.simple.parser.ParseException;
+import com.marios8543.discordbot.DiscordBot;
 import spark.Service;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
 
 import static spark.Service.ignite;
 import static spark.Spark.exception;
@@ -14,9 +11,13 @@ import static spark.Spark.internalServerError;
 /** @noinspection unchecked*/
 class Main {
     private static final Service server = ignite().port(4567);
+    private static RadioApi radioContext;
 
     public static void main(String[] args) {
         server.staticFiles.location("/public");
+        radioContext = new RadioApi(server);
+        new PlayerApi(server);
+        new DiscordBot(System.getenv("DISCORD_TOKEN"), radioContext);
 
         internalServerError((req, res) -> {
             res.type("application/json");
@@ -31,9 +32,6 @@ class Main {
         });
 
         System.out.println("Starting server");
-
-        new RadioApi(server);
-        new PlayerApi(server);
         server.get("/radio",(req,res)->{
             res.redirect("radio.html");
             return "";

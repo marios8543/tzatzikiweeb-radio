@@ -1,4 +1,4 @@
-package com.company;
+package com.marios8543;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;

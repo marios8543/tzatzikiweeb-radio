@@ -1,18 +1,15 @@
-package com.company;
+package com.marios8543;
 
 import org.json.simple.JSONObject;
 
-import java.net.URLDecoder;
-import java.nio.charset.Charset;
-
-class Song {
+public class Song {
     final String path;
-    final String id;
-    final String title;
-    final String artist;
-    final String album;
-    final int length;
-    final String albumId;
+    public final String id;
+    public final String title;
+    public final String artist;
+    public final String album;
+    public final int length;
+    public final String albumId;
 
     public Song(JSONObject obj){
         //System.out.println(obj.toJSONString());
