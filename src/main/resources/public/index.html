@@ -2,212 +2,216 @@
 <html lang="en">
 
 <head>
-  <meta charset="utf-8">
-  <title>tzatzikiweeb.moe Music</title>
-  <meta name="author" content="tzatzikiweeb#7687">
-  <link rel="stylesheet" href="https://bootswatch.com/4/darkly/bootstrap.min.css">
-  <link href="https://fonts.googleapis.com/css?family=Press+Start+2P&display=swap" rel="stylesheet">
-  <link href="https://cdn.tzatzikiweeb.moe/file/tzatzikiweeb-public/static/css/nes.min.css" rel="stylesheet" />
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    font-family: 'Press Start 2P',
-    cursive;
+    <meta charset="utf-8">
+    <title>tzatzikiweeb.moe Music</title>
+    <meta name="author" content="tzatzikiweeb#7687">
+    <link rel="stylesheet" href="https://bootswatch.com/4/darkly/bootstrap.min.css">
+    <link href="https://fonts.googleapis.com/css?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="https://cdn.tzatzikiweeb.moe/file/tzatzikiweeb-public/static/css/nes.min.css" rel="stylesheet" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        font-family: 'Press Start 2P',
+        cursive;
 
-    ul.nav {
-      white-space: nowrap;
-      overflow-x: auto;
-    }
+        ul.nav {
+            white-space: nowrap;
+            overflow-x: auto;
+        }
 
-    ul.nav li {
-      display: inline-block;
-      float: none;
-    }
+        ul.nav li {
+            display: inline-block;
+            float: none;
+        }
 
-    .song-table {
-      position: relative;
-      height: 25rem;
-      width: 100%;
-      overflow: auto;
-    }
+        .song-table {
+            position: relative;
+            height: 25rem;
+            width: 100%;
+            overflow: auto;
+        }
 
-    body {
-      background-color: black;
-    }
+        body {
+            background-color: black;
+        }
 
-    ::-webkit-scrollbar {
-      width: 10px;
-    }
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
 
-    ::-webkit-scrollbar-track {
-      background: rgba(0, 0, 0, 0);
-    }
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0);
+        }
 
-    ::-webkit-scrollbar-thumb {
-      background: #888;
-    }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+        }
 
-    ::-webkit-scrollbar-thumb:hover {
-      background: #555;
-    }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
 
-    .table-wrapper-scroll-y {
-      display: block;
-    }
+        .table-wrapper-scroll-y {
+            display: block;
+        }
 
-    thead {
-      position: sticky;
-    }
+        thead {
+            position: sticky;
+        }
 
-    .message {
-      word-break: break-all;
-    }
+        .message {
+            word-break: break-all;
+        }
 
-    #dialog {
-      position: fixed;
-      z-index: 99;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-    }
+        #dialog {
+            position: fixed;
+            z-index: 99;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
 
-    #blur {
-      background-color: rgba(0, 0, 0, 0.8);
-      width: 100%;
-      height: 100%;
-      position: absolute;
-      z-index: 98;
-    }
+        #blur {
+            background-color: rgba(0, 0, 0, 0.8);
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            z-index: 98;
+        }
 
-    .noscroll {
-      overflow-y: hidden;
-      overflow-x: hidden;
-    }
-  </style>
+        .noscroll {
+            overflow-y: hidden;
+            overflow-x: hidden;
+        }
+    </style>
 </head>
 
 <body>
-  <section id="dialog">
-    <div class="nes-dialog is-dark">
-      <p class="title">Alert</p>
-      <p>Browsers now require user interaction before they can play sound.<br>
-        Click on OK to start playback!</p>
-      <menu class="dialog-menu">
-        <button onclick="confirmInteraction()" class="nes-btn">OK</button>
-      </menu>
-    </div>
-  </section>
-  <div id="blur"></div>
-  <div class="container" id="mainWrap">
-    <audio id="mainAudio"></audio>
-    <div class="row" style="height: 80%;" v-on:mouseover="firstPlay = true;">
-      <div class="col-sm">
-        <div class="nes-container is-dark with-title" style="width:100%; height:100%;">
-          <p class="title">Now playing</p>
-          <img v-bind:src="'https://jellyfin.tzatzikiweeb.moe/Items/'+nowPlaying.albumId+'/Images/Primary?maxHeight=300&quality=20'" width="240" height="240" v-on:error="onImgError"><br><br>
-          <h5>
-            {{ nowPlaying.artist }} - {{ nowPlaying.title }}<br>
-            {{ nowPlaying.album }}
-            <br>
-            {{ timeFormat(times.currentTime) }}
-            <progress class="nes-progress is-pattern" style="width:250px; height:25px;" v-bind:max="times.duration"
-              v-bind:value="times.currentTime"></progress>
-            {{ timeFormat(times.duration) }}
-          </h5>
-          <button class="nes-btn" v-on:click="mute()"><i
-              v-bind:class="muted ? 'fas fa-volume-up' : 'fas fa-volume-mute'"></i></button>
-          <input @change="updateVolume" type="range" min="0" max="100" value="25" style="width:170px;">
-          <button v-if="!showSkipVotes" v-on:click="voteSkip" class="nes-btn">Skip</button>
-          <a v-else>Skip: {{ skipVotes }}</a>
+    <section id="dialog">
+        <div class="nes-dialog is-dark">
+            <p class="title">Alert</p>
+            <p>Browsers now require user interaction before they can play sound.<br>
+                Click on OK to start playback!</p>
+            <menu class="dialog-menu">
+                <button onclick="confirmInteraction()" class="nes-btn">OK</button>
+            </menu>
         </div>
-      </div>
-      <div class="col-sm">
-        <div class="nes-container is-dark with-title" style="height:100%;">
-          <p class="title">Now listening: {{ nowListening }}</p>
-          <div class="lists">
-            <ul class="nes-list is-circle ff-scroller" style="height: 20rem; overflow-y: scroll; padding:0px;">
-              <li v-for="message in messages" class="list-group.itme">
-                <b>{{ message.author }}:</b><a class="message">{{ message.content }}</a>
-              </li>
-            </ul>
-            <div style="background-color:#212529; padding: 1rem;" class="nes-field is-inline">
-              <input id="dark_field" v-on:keyup.enter="sendMessage()" v-model="chatInput" class="nes-input is-dark"
-                type="text" placeholder="Type your message">
+    </section>
+    <div id="blur"></div>
+    <div class="container" id="mainWrap">
+        <audio id="mainAudio"></audio>
+        <div class="row" style="height: 80%;" v-on:mouseover="firstPlay = true;">
+            <div class="col-sm">
+                <div class="nes-container is-dark with-title" style="width:100%; height:100%;">
+                    <p class="title">Now playing</p>
+                    <img v-bind:src="'/api/cover?id='+nowPlaying.id"
+                        width="240" height="240" v-on:error="onImgError"><br><br>
+                    <h5>
+                        {{ nowPlaying.artist }} - {{ nowPlaying.title }}<br>
+                        {{ nowPlaying.album }}
+                        <br>
+                        {{ timeFormat(times.currentTime) }}
+                        <progress class="nes-progress is-pattern" style="width:250px; height:25px;"
+                            v-bind:max="times.duration" v-bind:value="times.currentTime"></progress>
+                        {{ timeFormat(times.duration) }}
+                    </h5>
+                    <button class="nes-btn" v-on:click="mute()"><i
+                            v-bind:class="muted ? 'fas fa-volume-up' : 'fas fa-volume-mute'"></i></button>
+                    <input @change="updateVolume" type="range" min="0" max="100" value="25" style="width:170px;">
+                    <button v-if="!showSkipVotes" v-on:click="voteSkip" class="nes-btn">Skip</button>
+                    <a v-else>Skip: {{ skipVotes }}</a>
+                </div>
             </div>
-          </div>
+            <div class="col-sm">
+                <div class="nes-container is-dark with-title" style="height:100%;">
+                    <p class="title">Now listening: {{ nowListening }}</p>
+                    <div class="lists">
+                        <ul class="nes-list is-circle ff-scroller"
+                            style="height: 20rem; overflow-y: scroll; padding:0px;">
+                            <li v-for="message in messages" class="list-group.itme">
+                                <b>{{ message.author }}:</b><a class="message">{{ message.content }}</a>
+                            </li>
+                        </ul>
+                        <div style="background-color:#212529; padding: 1rem;" class="nes-field is-inline">
+                            <input id="dark_field" v-on:keyup.enter="sendMessage()" v-model="chatInput"
+                                class="nes-input is-dark" type="text" placeholder="Type your message">
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-    <div class="nes-container is-dark with-title" style="width:100%; padding-bottom:0px; margin-top:30px;">
-      <p class="title">Coming up next...</p>
-      <div class="col-sm" id="comingUpNext">
-        <div class="row lists">
-          <ul class="nes-list is-circle" style="width:100%;">
-            <li v-for="song in upcoming">
-              <img v-bind:src="'https://jellyfin.tzatzikiweeb.moe/Items/'+song.albumId+'/Images/Primary?maxHeight=300&quality=20'" style="float: left; margin-right: 10px;" width="50"
-                height="50" v-on:error="onImgError">
-              <div style="text-overflow: ellipsis;" v-bind:title="song.artist - song.title">
-                {{ song.artist }}<br>{{ song.title }}
-              </div>
-              <hr style="margin-top: 3px; margin-bottom: 3px;">
-            </li>
-          </ul>
+        <div class="nes-container is-dark with-title" style="width:100%; padding-bottom:0px; margin-top:30px;">
+            <p class="title">Coming up next...</p>
+            <div class="col-sm" id="comingUpNext">
+                <div class="row lists">
+                    <ul class="nes-list is-circle" style="width:100%;">
+                        <li v-for="song in upcoming">
+                            <img v-bind:src="'/api/cover?id='+song.id"
+                                style="float: left; margin-right: 10px;" width="50" height="50" v-on:error="onImgError">
+                            <div style="text-overflow: ellipsis;" v-bind:title="song.artist - song.title">
+                                {{ song.artist }}<br>{{ song.title }}
+                            </div>
+                            <hr style="margin-top: 3px; margin-bottom: 3px;">
+                        </li>
+                    </ul>
+                </div>
+            </div>
         </div>
-      </div>
+        <br>
+        <div class="row">
+            <div style="width: 100%; padding: 1rem;" class="nes-field is-inline">
+                <input v-on:keyup.enter="loadRange()" v-model="searchInput" class="nes-input is-dark" type="text"
+                    placeholder="Search">
+            </div>
+            <div class="table-wrapper-scroll-y song-table nes-table-responsive">
+                <table class="nes-table is-bordered is-dark ff-scroller">
+                    <thead>
+                        <tr>
+                            <th>Request</th>
+                            <th><a v-on:click="selectSort('Name')">Title</a></th>
+                            <th><a v-on:click="selectSort('Artist')">Artist</a></th>
+                            <th><a v-on:click="selectSort('Album')">Album</a></th>
+                        </tr>
+                    </thead>
+                    <tbody style="height: 20%; overflow:scroll;">
+                        <tr v-for="(song,index) in songList">
+                            <td><button class="nes-btn" v-on:click="submitRequest(song.id)"><i
+                                        class="fas fa-music"></i></button>
+                            </td>
+                            <td>{{ song.title }}</td>
+                            <td>{{ song.artist }}</td>
+                            <td>{{ song.album }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row" style="text-align: center; color: white;">
+            <div class="col center-block">
+                <a v-on:click="loadRange(app.current_offset-1 >= 0 ? app.current_offset-1 : offset_count)">
+                    << <a v-on:click="pageInput()">{{ current_offset }} / {{ offset_count }}
+                </a>
+                <a v-on:click="loadRange(app.current_offset+1 <= offset_count ? app.current_offset+1 : 0)">>></a>
+            </div>
+        </div>
     </div>
-    <br>
-    <div class="row">
-      <div style="width: 100%; padding: 1rem;" class="nes-field is-inline">
-        <input v-on:keyup.enter="search()" v-model="searchInput" class="nes-input is-dark" type="text"
-          placeholder="Search">
-      </div>
-      <div class="table-wrapper-scroll-y song-table nes-table-responsive">
-        <table class="nes-table is-bordered is-dark ff-scroller">
-          <thead>
-            <tr>
-              <th>Request</th>
-              <th><a v-on:click="selectSort('Name')">Title</a></th>
-              <th><a v-on:click="selectSort('Artist')">Artist</a></th>
-              <th><a v-on:click="selectSort('Album')">Album</a></th>
-            </tr>
-          </thead>
-          <tbody style="height: 20%; overflow:scroll;">
-            <tr v-for="(song,index) in songList">
-              <td><button class="nes-btn" v-on:click="submitRequest(song.id)"><i class="fas fa-music"></i></button>
-              </td>
-              <td>{{ song.title }}</td>
-              <td>{{ song.artist }}</td>
-              <td>{{ song.album }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <div class="row" style="text-align: center; color: white;">
-      <div class="col center-block">
-        <a v-on:click="loadRange(app.current_offset-1 >= 0 ? app.current_offset-1 : offset_count)"><<</a>
-        <a v-on:click="pageInput()">{{ current_offset }} / {{ offset_count }}</a>
-        <a v-on:click="loadRange(app.current_offset+1 <= offset_count ? app.current_offset+1 : 0)">>></a>
-      </div>
-    </div>
-  </div>
-  <script src="js/jquery-3.3.1.min.js"></script>
-  <script src="js/vue.min.js"></script>
-  <script src="https://kit.fontawesome.com/53cc0cdc82.js" crossorigin="anonymous"></script>
-  <script src="js/new_radio.js"></script>
-  <script>
-    $("#blur").show();
-    $("body").addClass("noscroll");
-    function confirmInteraction() {
-      app.fetchSongs(true);
-      $("#dialog").hide();
-      $("#blur").hide();
-      $("body").removeClass("noscroll");
-    }
-  </script>
+    <script src="js/jquery-3.3.1.min.js"></script>
+    <script src="js/vue.min.js"></script>
+    <script src="https://kit.fontawesome.com/53cc0cdc82.js" crossorigin="anonymous"></script>
+    <script src="js/new_radio.js"></script>
+    <script>
+        $("#blur").show();
+        $("body").addClass("noscroll");
+        function confirmInteraction() {
+            app.fetchSongs(true);
+            $("#dialog").hide();
+            $("#blur").hide();
+            $("body").removeClass("noscroll");
+        }
+    </script>
 
-  <script>
+    <script>
 
-  </script>
+    </script>
 </body>
 
 </html>

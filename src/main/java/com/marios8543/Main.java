@@ -1,6 +1,7 @@
 package com.marios8543;
 
 import com.marios8543.discordbot.DiscordBot;
+import com.marios8543.musicsource.NavidromeSource;
 import spark.Service;
 
 import static spark.Service.ignite;
@@ -9,15 +10,22 @@ import static spark.Spark.internalServerError;
 
 
 /** @noinspection unchecked*/
-class Main {
+public class Main {
     private static final Service server = ignite().port(4567);
-    private static RadioApi radioContext;
+
+    public static final NavidromeSource musicSource = new NavidromeSource(
+            System.getenv("ND_HOST"),
+            System.getenv("ND_USER"),
+            System.getenv("ND_PASS")
+    );
 
     public static void main(String[] args) {
         server.staticFiles.location("/public");
-        radioContext = new RadioApi(server);
+        RadioApi radioContext = new RadioApi(server);
         new PlayerApi(server);
-        new DiscordBot(System.getenv("DISCORD_TOKEN"), radioContext);
+        String discordToken = System.getenv("DISCORD_TOKEN");
+        if (discordToken != null)
+            new DiscordBot(System.getenv("DISCORD_TOKEN"), radioContext);
 
         internalServerError((req, res) -> {
             res.type("application/json");

@@ -1,6 +1,6 @@
 package com.marios8543.discordbot;
 
-import com.marios8543.Song;
+import com.marios8543.musicsource.Song;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;

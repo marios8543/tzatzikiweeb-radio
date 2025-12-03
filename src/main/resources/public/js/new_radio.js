@@ -72,7 +72,7 @@ const app = new Vue({
             player.volume = event.target.value/100;
         },
         loadRange (i = app.current_offset) {
-            $.getJSON("api/player", { 's': i, 'sortBy': app.sortBy }, function (res) {
+            $.getJSON("api/player", { 's': i, 'sortBy': app.sortBy, 'q': app.searchInput }, function (res) {
                 app.songList = res.songs;
                 app.offset_count = res.offset_count;
                 app.current_offset = i;
@@ -95,11 +95,6 @@ const app = new Vue({
             $.getJSON("api/radio/voteSkip", function (res) {
                 _this.showSkipVotes = true;
             }).fail(function (xhr, status, error) {
-            });
-        },
-        search () {
-            $.getJSON("api/search", { 'q': app.searchInput }, function (res) {
-                app.songList = res.songs;
             });
         },
         pageInput () {

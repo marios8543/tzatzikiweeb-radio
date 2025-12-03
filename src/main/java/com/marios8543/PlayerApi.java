@@ -1,8 +1,12 @@
 package com.marios8543;
 
+import com.marios8543.musicsource.ChunkedLibrary;
+import com.marios8543.musicsource.Song;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import spark.Service;
+
+import static com.marios8543.Main.musicSource;
 
 class PlayerApi {
     public PlayerApi(Service server){
@@ -10,11 +14,12 @@ class PlayerApi {
         server.get("/api/player",(req,res)->{
             int offset = Integer.parseInt(req.queryParams("s")!=null ? req.queryParams("s") : "0");
             String sortBy = req.queryParams("sortBy");
+            String query = req.queryParams("q");
 
             JSONObject ret = new JSONObject();
             JSONArray retarr = new JSONArray();
 
-            JellyfinClient.ChunkedLibrary chunkedLibrary = JellyfinClient.getLibrary(offset, sortBy);
+            ChunkedLibrary chunkedLibrary = musicSource.search(query, sortBy, offset);
             for (Song s : chunkedLibrary.items) retarr.add(s.toJSON());
             ret.put("songs",retarr);
             ret.put("offset_count", chunkedLibrary.totalCount / 30);
@@ -23,22 +28,9 @@ class PlayerApi {
             return ret.toJSONString();
         });
 
-        server.get("/api/search",(req,res)->{
-            JSONObject ret = new JSONObject();
-            res.type("application/json; charset=utf-8");
-            String query = req.queryParams("q");
-            if(query==null || query.length()<3){
-                res.status(400);
-                ret.put("message","No search query or query shorter than 3 characters");
-            }
-            else {
-                res.status(200);
-                query = query.toLowerCase();
-                JSONArray retarr = new JSONArray();
-                for (Song s : JellyfinClient.search(query)) retarr.add(s.toJSON());
-                ret.put("songs",retarr);
-            }
-            return ret.toJSONString();
+        server.get("/api/cover", (req, res) -> {
+            String id = req.queryParams("id");
+            return musicSource.getCoverImage(id);
         });
     }
 }

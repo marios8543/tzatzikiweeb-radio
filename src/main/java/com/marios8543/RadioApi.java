@@ -1,6 +1,7 @@
 package com.marios8543;
 
 import com.marios8543.discordbot.SongChangeListener;
+import com.marios8543.musicsource.Song;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import spark.Service;
@@ -8,6 +9,7 @@ import spark.Service;
 import java.time.Instant;
 import java.util.*;
 
+import static com.marios8543.Main.musicSource;
 import static spark.Spark.halt;
 
 public class RadioApi {
@@ -17,7 +19,7 @@ public class RadioApi {
     private final Map<String,Long> requestLimits = new HashMap<>();
     private static int currentTime = 0;
     private List<String> skipVotes = new ArrayList<>();
-    private final int requestLimit = Integer.parseInt(System.getenv("request_limit"));
+    private final int requestLimit = Integer.parseInt(System.getenv("REQUEST_LIMIT"));
     private boolean skip = false;
     public final WSHandler wsHandler = new WSHandler();
     private List<SongChangeListener> songChangeListeners = new ArrayList<>();
@@ -60,7 +62,7 @@ public class RadioApi {
         });
 
         server.get("/api/radio/request",(req,res) -> {
-            Song song = JellyfinClient.getSongById(req.queryParams("id")!=null ? req.queryParams("id") : "");
+            Song song = musicSource.getSongById(req.queryParams("id")!=null ? req.queryParams("id") : "");
             JSONObject object = new JSONObject();
             requests.add(song);
             res.type("application/json; charset=utf-8");
@@ -139,12 +141,13 @@ public class RadioApi {
                 while (playlist.size() < 5) {
                     while (true) {
                         try {
-                            Song song = JellyfinClient.getRandomSong();
+                            Song song = musicSource.getRandomSong();
                             if (!song.title.toLowerCase().contains("inst") && !song.title.toLowerCase().contains("off vocal")) {
                                 playlist.add(song);
                                 break;
                             }
                         } catch (Exception e) {
+                            e.printStackTrace();
                             System.out.println(e.getMessage() + "\nRetrying...");
                         }
                     }

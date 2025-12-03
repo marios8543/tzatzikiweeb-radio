@@ -1,8 +1,7 @@
 package com.marios8543.discordbot;
 
-import com.marios8543.JellyfinClient;
 import com.marios8543.RadioApi;
-import com.marios8543.Song;
+import com.marios8543.musicsource.Song;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.Permission;
@@ -23,6 +22,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static com.marios8543.Main.musicSource;
 
 public class EventListener extends ListenerAdapter {
     private static final String BASE_URL = System.getenv("JELLYFIN_BASE_URL");
@@ -79,7 +80,7 @@ public class EventListener extends ListenerAdapter {
             case "search" -> {
                 String query = event.getOption("query", OptionMapping::getAsString);
                 try {
-                    List<Song> results = JellyfinClient.search(query);
+                    List<Song> results = List.of(musicSource.search(query).items);
                     results = results.subList(0, Math.min(results.size(), 25));
                     StringSelectMenu.Builder menu = StringSelectMenu.create("search-results-" + event.getId());
                     for (Song song : results)
@@ -118,7 +119,7 @@ public class EventListener extends ListenerAdapter {
                 else requestLimits.remove(requestUserId);
             }
             try {
-                Song song = JellyfinClient.getSongById(requestSongId);
+                Song song = musicSource.getSongById(requestSongId);
                 context.addRequest(song);
                 requestLimits.put(requestUserId, Instant.now().getEpochSecond());
                 event.reply(String.format("You requested %s - %s. Position: %d", song.artist, song.title, context.getRequests().size())).setEphemeral(true).queue();
